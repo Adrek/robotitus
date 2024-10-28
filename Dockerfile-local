@@ -1,0 +1,22 @@
+# Stage de instalación de dependencias
+FROM node:20-bookworm AS runner
+
+# Instala dependencias adicionales necesarias
+RUN apt update && apt install apt-transport-https lsb-release ca-certificates -y htop
+
+# Instala Playwright con las dependencias necesarias
+RUN npx -y playwright@1.45.1 install --with-deps
+
+# Configura la zona horaria
+ENV TZ=America/Lima
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Exponer puerto donde corre el backend
+EXPOSE 3500
+
+# Seteamos directorio de trabajo
+WORKDIR /app
+
+# Instalamos dependencias sin las dev
+COPY package*.json ./
+RUN npm install

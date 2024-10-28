@@ -1,0 +1,8 @@
+dist/
+node_modules/
+server/
+logs/
+
+.git/
+
+*.tar

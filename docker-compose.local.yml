@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: . # Construye la imagen desde el directorio actual
+      dockerfile: Dockerfile-local # Usa Dockerfile-local en lugar del Dockerfile por defecto
+    image: pm2-rpa-robosat-prd:3.9
+    # mem_limit: 120m # Limitar a 512MB de RAM
+    # cpus: '0.5' # Limitar a 0.5 CPUs
+    container_name: api-robotsat
+    ports:
+      - '${PORT_CONTAINER}:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PROXY_HOST=${PROXY_HOST}
+      - PROXY_PORT=${PROXY_PORT}
+      - PROXY_USER=${PROXY_USER}
+      - PROXY_PASSWORD=${PROXY_PASSWORD}
+      - TWO_CAPTCHA_KEY=${TWO_CAPTCHA_KEY}
+      - HTTP_PROXY=http://${PROXY_USER}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}
+      - HTTPS_PROXY=http://${PROXY_USER}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_DEBUG_ENABLED=${SENTRY_DEBUG_ENABLED}
+    volumes:
+      # Mapea tu carpeta dist generada localmente al contenedor
+      # - ./dist:/app/dist
+      # Mapea tu carpeta src para habilitar hotreload con nodemon
+      - ./src:/app/src
+      # Mapea el package.json para que nodemon también vea los cambios
+      - ./package.json:/app/package.json
+      # Evita reinstalar las dependencias en cada cambio
+      - /app/node_modules
+      # Otras dependencias necesarias
+      - ./nest-cli.json:/app/nest-cli.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./tsconfig.json:/app/tsconfig.json
+    command: npm run start:dev # Ejecuta con nodemon para hotreload

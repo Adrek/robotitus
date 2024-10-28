@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  api:
+    image: pm2-rpa-robosat-prd:3.11
+    container_name: api-robotsat
+    ports:
+      - '${PORT_CONTAINER}:3000'
+      - '80:80'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PROXY_HOST=${PROXY_HOST}
+      - PROXY_PORT=${PROXY_PORT}
+      - PROXY_USER=${PROXY_USER}
+      - PROXY_PASSWORD=${PROXY_PASSWORD}
+      - TWO_CAPTCHA_KEY=${TWO_CAPTCHA_KEY}
+      - HTTP_PROXY=http://${PROXY_USER}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}
+      - HTTPS_PROXY=http://${PROXY_USER}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_DEBUG_ENABLED=${SENTRY_DEBUG_ENABLED}
+    networks:
+      net-sat:
+
+networks:
+  net-sat:
+    external: true
